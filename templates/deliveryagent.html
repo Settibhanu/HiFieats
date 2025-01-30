@@ -61,21 +61,8 @@
       background-color: #ffd7b5;
       transform: scale(1.05);
     }
-        /* Notification Count */
-    .notification-count {
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background-color: rgb(11, 131, 7); /* Orange background */
-      color: white;
-      font-size: 0.9rem;
-      text-align: center;
-      line-height: 18px;
-      visibility: hidden; /* Hidden by default */
-    }
+      
+    
 
     /* Notification Box */
     .notification-box {
@@ -112,7 +99,8 @@
     .notification-box li:last-child {
       border-bottom: none;
     }
-
+    
+  
     .notification-actions {
       margin-top: 0.5rem;
       display: flex;
@@ -121,7 +109,25 @@
 
     .notification-btn {
       position: relative;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
     }
+    .green-dot {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 20px; /* Adjust size to accommodate the count */
+      height: 20px; /* Adjust size to accommodate the count */
+      background-color: green;
+      border-radius: 50%;
+      color: white;
+      font-size: 12px; /* Adjust font size to fit the count */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  }
 
     /* Notification Count inside notification-btn */
     .notification-btn .notification-count {
@@ -312,6 +318,7 @@
       margin-top: auto;
     }
   </style>
+
 </head>
 <body>
   {% with messages = get_flashed_messages(with_categories=true) %}
@@ -349,8 +356,11 @@
      
       <button class="btn notification-btn" id="notification-btn">
         <i class="fas fa-bell"></i> Notifications
-        <div class="notification-count" id="notification-count"></div>
-      </button>
+        {% if new_orders %}
+        <span class="green-dot">{{ new_orders|length }}</span> <!-- Green dot on the notification button -->
+        {% endif %}
+    </button>
+    
       
       <a href="{{ url_for('logout') }}" class="btn">logout</a>
     </div>
@@ -388,7 +398,8 @@
   <div class="notification-box" id="notification-box">
     <h4>New Notifications</h4>
     <ul id="notification-list">
-        {% for order in new_orders %}
+      
+      {% for order in new_orders %}
         <li data-order-id="{{ order[0] }}">
             New delivery assignment for Order #{{ order[0] }}
             <div class="notification-actions">
@@ -397,9 +408,9 @@
             </div>
             <button class="delete-btn" onclick="deleteNotification(this)"><i class="fas fa-trash"></i></button>
         </li>
-        {% else %}
+      {% else %}
         <li>No new notifications</li>
-        {% endfor %}
+      {% endfor%}
     </ul>
 </div>
 
@@ -413,16 +424,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const notificationBtn = document.getElementById('notification-btn');
         const notificationBox = document.getElementById('notification-box');
-        const notificationCountDisplay = document.getElementById('notification-count'); // We'll keep this for internal logic, but no longer display it.
 
-        // Update the notification count (for "Accept" buttons)
-        function updateNotificationCount() {
-            const notificationsWithAcceptButton = document.querySelectorAll('.notification-box li button.accept-btn').length;
-            console.log('Notifications with accept button:', notificationsWithAcceptButton); // Debugging log
-
-            // Optionally, update the count somewhere else if needed, or just log it.
-            // notificationCountDisplay.textContent = notificationsWithAcceptButton; // If you want to display this count elsewhere
-        }
 
         // Toggle notification box visibility
         notificationBtn.addEventListener('click', () => {
@@ -432,42 +434,72 @@
 
         // Handle Accept action
         function handleAccept(button) {
-            const notification = button.closest('li');
-            const orderId = notification.getAttribute('data-order-id');
+          const notification = button.closest('li');
+          const orderId = notification.getAttribute('data-order-id');
+      
+          // Send a request to update the order status
+          fetch('/accept_order', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ orderId: orderId })
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  // Update UI after successful database update
+                  notification.innerHTML = `Order #${orderId} accepted. 
+                      <button class="view-btn" onclick="window.location.href='deliverystatus'">View</button>
+                      <button class="delete-btn" onclick="deleteNotification(this)">
+                          <i class="fas fa-trash"></i>
+                      </button>`;
+                  notification.style.backgroundColor = '#e8f5e9'; // Green for accepted
+                  notification.classList.remove('unread'); // Mark as read
+              } else {
+                  alert('Failed to update order status. Try again.');
+              }
+          })
+          .catch(error => console.error('Error:', error));
+      }
+      
 
-            notification.innerHTML = `Order #${orderId} accepted. 
-                <button class="view-btn" onclick="window.location.href='deliverystatus'">View</button>
-                <button class="delete-btn" onclick="deleteNotification(this)">
-                    <i class="fas fa-trash"></i>
-                </button>`;
-            notification.style.backgroundColor = '#e8f5e9'; // Green for accepted
-            notification.classList.remove('unread'); // Mark as read
-            const deleteBtn = notification.querySelector('.delete-btn');
-            deleteBtn.style.visibility = 'visible';
-            updateNotificationCount(); // Update count after acceptance
-        }
+       // Handle Reject action
+function handleReject(button) {
+  const notification = button.closest('li');
+  const orderId = notification.getAttribute('data-order-id');
 
-        // Handle Reject action
-        function handleReject(button) {
-            const notification = button.closest('li');
-            const orderId = notification.getAttribute('data-order-id');
+  fetch("/reject_order", {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ orderId: orderId })
+  })
+  .then(response => response.json())
+  .then(data => {
+      if (data.success) {
+          // Update UI after successful rejection
+          notification.innerHTML = `Order #${orderId} rejected. 
+              <button class="delete-btn" onclick="deleteNotification(this)">
+                  <i class="fas fa-trash"></i>
+              </button>`;
+          notification.style.backgroundColor = '#ffebee'; // Red for rejected
+          notification.classList.remove('unread'); // Mark as read
+          updateNotificationCount(); // Update count after rejection
+      } else {
+          alert("Failed to reject order. Try again.");
+      }
+  })
+  .catch(error => console.error("Error:", error));
+}
 
-            notification.innerHTML = `Order #${orderId} rejected. 
-                <button class="delete-btn" onclick="deleteNotification(this)">
-                    <i class="fas fa-trash"></i>
-                </button>`;
-            notification.style.backgroundColor = '#ffebee'; // Red for rejected
-            notification.classList.remove('unread'); // Mark as read
-            const deleteBtn = notification.querySelector('.delete-btn');
-            deleteBtn.style.visibility = 'visible';
-            updateNotificationCount(); // Update count after rejection
-        }
+      
 
         // Delete a notification
         function deleteNotification(button) {
             const notification = button.closest('li');
             notification.remove(); // Remove from DOM
-            updateNotificationCount(); // Update count after deletion
         }
 
         // Attach listeners for accept and reject buttons
@@ -485,36 +517,26 @@
             });
         }
 
-        // Initial setup: Check if there are notifications
-        const notificationList = document.querySelector('#notification-list');
-        if (notificationList.children.length === 0) {
-            notificationCountDisplay.style.visibility = 'hidden'; // Hide notification count if no notifications
-        } else {
-            document.querySelectorAll('.notification-box li').forEach(notification => {
-                notification.classList.add('unread'); // Mark all as unread initially
-            });
-        }
+        // Ensure notifications are handled when added dynamically
+    function addNotification(orderId, customerName) {
+      console.log("Adding notification for order:", orderId);
+      const notificationList = document.getElementById("notification-list");
+      const newNotification = document.createElement("li");
+      newNotification.setAttribute("data-order-id", orderId);
+      newNotification.classList.add("unread");
+      newNotification.innerHTML = `
+          Order #${orderId} for ${customerName}.
+          <button class="accept-btn">Accept</button>
+          <button class="reject-btn">Reject</button>
+      `;
+      notificationList.appendChild(newNotification);
+      attachNotificationListeners(); // Reattach listeners to newly added buttons
+  }
 
-        attachNotificationListeners(); // Add event listeners
-        updateNotificationCount(); // Initial count update
+  // Initial setup
+  attachNotificationListeners();
 
-        // Ensure that the notification count is updated when a notification is added dynamically
-        function addNotification(orderId, customerName) {
-            console.log('Adding notification for order:', orderId); // Debugging log
-            const notificationList = document.getElementById('notification-list');
-            const newNotification = document.createElement('li');
-            newNotification.setAttribute('data-order-id', orderId);
-            newNotification.classList.add('unread');
-            newNotification.innerHTML = `
-                Order #${orderId} for ${customerName}.
-                <button class="accept-btn">Accept</button>
-                <button class="reject-btn">Reject</button>
-            `;
-            notificationList.appendChild(newNotification);
-            attachNotificationListeners(); // Reattach listeners to newly added buttons
-            updateNotificationCount(); // Update count after adding the notification
-        }
-    });
+});
 </script>
 
 </body>

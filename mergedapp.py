@@ -176,7 +176,7 @@ def init_db():
                 AFTER INSERT ON assignedOrders
                 WHEN NEW.status = 'New'
                 BEGIN
-                    UPD/menuATE assignedOrders
+                    UPDATE assignedOrders
                     SET TIMESTAMP = CURRENT_TIMESTAMP
                     WHERE id = NEW.id;
                 END;
@@ -368,7 +368,7 @@ def confirm_order():
     except Exception as e:
         app.logger.error(f"Error saving order: {e}")
         return jsonify({'error': 'Failed to save order'}), 500
-'''   
+"""
         #Insert into Orders1 database
         conn = sqlite3.connect(DATABASE)
         cursor = conn.cursor()
@@ -385,7 +385,7 @@ def confirm_order():
             for _ in range(quantity):
                 cursor.execute("INSERT INTO Orders1 (customerName,orderId, productName,orderDate) VALUES (?, ?, ?,CURRENT_DATE)", 
                             (customerName,id, item_name))
-'''
+"""
        # Commit and close
         #conn.commit()
         
@@ -1121,10 +1121,49 @@ def delivery():
             WHERE deliveryAgentId = ? AND status = 'New'
         """, (delivery_agent_id,))
         new_orders = cursor.fetchall()
-
     # Pass the new orders to the template
     return render_template('deliveryagent.html', new_orders=new_orders)
+#---------------------------------------
+@app.route('/accept_order', methods=['POST'])
+def accept_order():
+    data = request.get_json()
+    order_id = data.get('orderId')
 
+    if not order_id:
+        return jsonify({'success': False, 'error': 'Missing order ID'})
+
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE assignedOrders 
+                SET status = 'In Progress' 
+                WHERE orderId = ? AND status = 'New'
+            """, (order_id,))
+            conn.commit()
+
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+# Route to handle rejection of an order
+@app.route('/reject_order', methods=['POST'])
+def reject_order():
+    data = request.get_json()
+    order_id = data.get('orderId')
+
+    if not order_id:
+        return jsonify({'success': False, 'error': 'Missing order ID'})
+
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM assignedOrders WHERE orderId = ?", (order_id,))
+            conn.commit()
+
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+    
 @app.route('/deliverystatus')
 def delivery_status():
     return render_template('deliverystatus.html')
