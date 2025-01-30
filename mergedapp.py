@@ -536,9 +536,11 @@ def assign_order():
     
     conn = get_db_connection()
     cursor = conn.cursor()
-    conn.execute('''SELECT customerName FROM Orders1 WHERE orderId=?''', (orderId,))
+    print(orderId)
+    cursor.execute('''SELECT customerName FROM Orders1 WHERE orderId=?''', (orderId,))
     customerName = cursor.fetchone()
-
+    print(orderId)
+    print(customerName)
     # Since fetchone() returns a tuple, you need to extract the first element
     if customerName:
         customerName = customerName[0]  # Extract the customerName from the tuple
@@ -1843,22 +1845,4 @@ def delivery_kpi():
     return render_template('delivery_kpi.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
+    app.run(debug=True) 
