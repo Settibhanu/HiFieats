@@ -374,20 +374,37 @@ def confirm_order():
         cursor = conn.cursor()
         customerName=session['username']
         items = items_str.split(",")  # Split items
+        cursor.execute("SELECT id from orders where items=?",(items_str,))
+        r=cursor.fetchone()
+        id=r[0]
         for item in items:
             match = re.match(r"(.*) \(x(\d+)\)", item.strip())  # Extract name & quantity
             if match:
                 item_name, quantity = match.groups()
                 quantity = int(quantity)
+                print(customerName,id, item_name)
+                for _ in range(quantity):
+                    cursor.execute("INSERT INTO Orders1 (customerName,orderId, productName,orderDate) VALUES (?, ?, ?,CURRENT_DATE)", 
+                            (customerName,id, item_name))
             else:
                 item_name, quantity = item.strip(), 1  # Default quantity = 1
-            # Insert each item into Orders1
-            for _ in range(quantity):
                 cursor.execute("INSERT INTO Orders1 (customerName,orderId, productName,orderDate) VALUES (?, ?, ?,CURRENT_DATE)", 
                             (customerName,id, item_name))
 """
        # Commit and close
         #conn.commit()
+        conn.commit()
+        order_id = cursor.lastrowid
+        conn.close()
+
+        app.logger.info(f"Order {order_id} confirmed and saved to database.")
+        #conn.close()
+        return jsonify({'message': 'Order confirmed', 'order_id': order_id})
+    except Exception as e:
+        app.logger.error(f"Error saving order: {e}")
+        return jsonify({'error': 'Failed to save order'}), 500
+ 
+        
         
 
 @app.route('/confirmOrder', methods=['GET'])
@@ -529,9 +546,11 @@ def assign_order():
     
     conn = get_db_connection()
     cursor = conn.cursor()
-    conn.execute('''SELECT customerName FROM Orders1 WHERE orderId=?''', (orderId,))
+    print(orderId)
+    cursor.execute('''SELECT customerName FROM Orders1 WHERE orderId=?''', (orderId,))
     customerName = cursor.fetchone()
-
+    print(orderId)
+    print(customerName)
     # Since fetchone() returns a tuple, you need to extract the first element
     if customerName:
         customerName = customerName[0]  # Extract the customerName from the tuple
@@ -1875,22 +1894,4 @@ def delivery_kpi():
     return render_template('delivery_kpi.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
+    app.run(debug=True) 
