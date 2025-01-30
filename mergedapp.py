@@ -359,6 +359,31 @@ def confirm_order():
         cursor.execute('INSERT INTO orders (items, location, total_price) VALUES (?, ?, ?)',
                        (items_str, location, total_price))
         conn.commit()
+        #Insert into Orders1 database
+        conn = sqlite3.connect(DATABASE)
+        cursor = conn.cursor()
+        customerName=session['username']
+        items = items_str.split(",")  # Split items
+        cursor.execute("SELECT id from orders where items=?",(items_str,))
+        r=cursor.fetchone()
+        id=r[0]
+        for item in items:
+            match = re.match(r"(.*) \(x(\d+)\)", item.strip())  # Extract name & quantity
+            if match:
+                item_name, quantity = match.groups()
+                quantity = int(quantity)
+                print(customerName,id, item_name)
+                for _ in range(quantity):
+                    cursor.execute("INSERT INTO Orders1 (customerName,orderId, productName,orderDate) VALUES (?, ?, ?,CURRENT_DATE)", 
+                            (customerName,id, item_name))
+            else:
+                item_name, quantity = item.strip(), 1  # Default quantity = 1
+                cursor.execute("INSERT INTO Orders1 (customerName,orderId, productName,orderDate) VALUES (?, ?, ?,CURRENT_DATE)", 
+                            (customerName,id, item_name))
+
+       # Commit and close
+        #conn.commit()
+        conn.commit()
         order_id = cursor.lastrowid
         conn.close()
 
@@ -368,26 +393,8 @@ def confirm_order():
     except Exception as e:
         app.logger.error(f"Error saving order: {e}")
         return jsonify({'error': 'Failed to save order'}), 500
-'''   
-        #Insert into Orders1 database
-        conn = sqlite3.connect(DATABASE)
-        cursor = conn.cursor()
-        customerName=session['username']
-        items = items_str.split(",")  # Split items
-        for item in items:
-            match = re.match(r"(.*) \(x(\d+)\)", item.strip())  # Extract name & quantity
-            if match:
-                item_name, quantity = match.groups()
-                quantity = int(quantity)
-            else:
-                item_name, quantity = item.strip(), 1  # Default quantity = 1
-            # Insert each item into Orders1
-            for _ in range(quantity):
-                cursor.execute("INSERT INTO Orders1 (customerName,orderId, productName,orderDate) VALUES (?, ?, ?,CURRENT_DATE)", 
-                            (customerName,id, item_name))
-'''
-       # Commit and close
-        #conn.commit()
+ 
+        
         
 
 @app.route('/confirmOrder', methods=['GET'])
