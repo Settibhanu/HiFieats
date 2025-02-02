@@ -7,8 +7,9 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #fff3e6; /* Light orange background */
             padding: 20px;
+            color: #333; /* Dark text for contrast */
         }
         .chart-container {
             width: 80%;
@@ -23,7 +24,7 @@
             width: 80%;
             margin: 20px auto;
             border-collapse: collapse;
-            background-color: #fff;
+            background-color: #fff; /* White table background */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         th, td {
@@ -32,10 +33,11 @@
             border: 1px solid #ddd;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #ff8c42; /* Orange header */
+            color: #fff; /* White text */
         }
         tbody tr:hover {
-            background-color: #f9f9f9;
+            background-color: #ffe5d4; /* Light orange hover */
         }
         .flash-container {
             position: absolute;
@@ -46,8 +48,7 @@
         }
 
         .flash-message {
-            background-color: #f44336;
-            /* Red background for error */
+            background-color: #ff8c42; /* Orange background */
             color: white;
             padding: 15px;
             margin: 10px;
@@ -58,13 +59,11 @@
         }
 
         .flash-message.success {
-            background-color: #4CAF50;
-            /* Green background for success */
+            background-color: #4CAF50; /* Green background for success */
         }
 
         .flash-message.danger {
-            background-color: #f44336;
-            /* Red background for error */
+            background-color: #f44336; /* Red background for error */
         }
 
         .flash-message p {
@@ -75,6 +74,10 @@
         .flash-message {
             display: block;
             animation: fadeInOut 3s forwards;
+        }
+
+        h1, h2, h3 {
+            color: #ff8c42; /* Orange headings */
         }
     </style>
 </head>
@@ -104,7 +107,6 @@
 
     <h1>Food Delivery Agent Performance</h1>
 
-
     <!-- Performance Data Table -->
     <h2>Performance Data</h2>
     <table>
@@ -131,18 +133,17 @@
     </table>
 
     <h3>Bar Chart</h3>
-{% if bar_chart_filename %}
-<img src="{{ url_for('static', filename='images/' + bar_chart_filename) }}" alt="Bar Chart">
-{% else %}
-<p>Bar chart is not available.</p>
-{% endif %}
+    {% if bar_chart_filename %}
+    <img src="{{ url_for('static', filename='images/' + bar_chart_filename) }}" alt="Bar Chart">
+    {% else %}
+    <p>Bar chart is not available.</p>
+    {% endif %}
 
-<h3>Line Chart</h3>
-{% if line_chart_filename %}
-<img src="{{ url_for('static', filename='images/' + line_chart_filename) }}" alt="Line Chart">
-{% else %}
-<p>Line chart is not available.</p>
-{% endif %}
-
+    <h3>Line Chart</h3>
+    {% if line_chart_filename %}
+    <img src="{{ url_for('static', filename='images/' + line_chart_filename) }}" alt="Line Chart">
+    {% else %}
+    <p>Line chart is not available.</p>
+    {% endif %}
 </body>
 </html>
