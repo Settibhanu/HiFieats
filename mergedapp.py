@@ -515,11 +515,16 @@ def orderassign():
 @app.route('/get_agents', methods=['GET'])
 def get_agents():
     conn = get_db_connection()
-    agents = conn.execute('''SELECT a.id, a.username,a.location, ap.orders_delivered, ap.on_time_deliveries,
-                                     ap.customer_ratings, ap.cancellation_rate
-                              FROM Delivery_Agent a
-                              JOIN DeliveryAgentPerformance ap ON a.id = ap.agent_id
-                              WHERE a.approved = 1''').fetchall()
+    agents = conn.execute('''SELECT a.id, a.username, a.location,
+                            SUM(ap.orders_delivered) AS orders_delivered,
+                            SUM(ap.on_time_deliveries) AS on_time_deliveries,
+                            AVG(ap.customer_ratings) AS customer_ratings,
+                            AVG(ap.cancellation_rate) AS cancellation_rate
+                        FROM Delivery_Agent a
+                        JOIN DeliveryAgentPerformance ap ON a.id = ap.agent_id
+                        WHERE a.approved = 1
+                        GROUP BY a.id, a.username, a.location;
+                        ''').fetchall()
     conn.close()
     agent_data = [dict(agent) for agent in agents]
     return jsonify({'agents': agent_data})
@@ -744,14 +749,14 @@ def login():
             # Querying based on role
             if role == 'deliveryagent':
                 cursor.execute("""
-                    SELECT * FROM Delivery_Agent WHERE username = ? AND password = ?
-                """, (username, password))
+                   SELECT * FROM Delivery_Agent  WHERE (username = ? OR email = ?) AND password = ?
+                """, (username,username, password))
                 user = cursor.fetchone()
 
             elif role == 'customer':
                 cursor.execute("""
-                    SELECT * FROM users WHERE username = ? AND password = ?
-                """, (username, password))
+                    SELECT * FROM users WHERE (username = ? OR email = ?) AND password = ?
+                """, (username,username, password))
                 user = cursor.fetchone()
 
             elif role == 'admin' and username == 'admin' and password == '123':
