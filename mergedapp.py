@@ -360,7 +360,7 @@ def confirm_order():
                        (items_str, location, total_price))
         conn.commit()
         order_id = cursor.lastrowid
-         #Insert into Orders1 database
+        #Insert into Orders1 database
         conn = sqlite3.connect(DATABASE)
         cursor = conn.cursor()
         customerName=session['username']
@@ -383,7 +383,7 @@ def confirm_order():
                             (customerName,id, item_name))
 
        # Commit and close
-       #conn.commit()
+        #conn.commit()
         conn.commit()
         conn.close()
 
@@ -393,10 +393,9 @@ def confirm_order():
     except Exception as e:
         app.logger.error(f"Error saving order: {e}")
         return jsonify({'error': 'Failed to save order'}), 500
-
-       
         
- 
+        
+
 @app.route('/confirmOrder', methods=['GET'])
 def confirm_order_page():
     """Render the order confirmation page."""
