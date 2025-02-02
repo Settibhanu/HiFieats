@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Tracking</title>
+
     <style>
         * {
             box-sizing: border-box;
@@ -34,6 +35,30 @@
             transform: translateY(20px);
             animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             border: 1px solid rgba(255, 128, 0, 0.1);
+        }
+        .go-to-menu-button {
+            position: absolute; /* Position the button absolutely */
+            top: 20px; /* Distance from the top */
+            right: 20px; /* Distance from the right */
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            background: linear-gradient(135deg, #ff8000 0%, #ff9933 100%);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(255, 128, 0, 0.2);
+        }
+
+        .go-to-menu-button:hover {
+            background: linear-gradient(135deg, #ff9933 0%, #ff8000 100%);
+            transform: translateY(-2px);
+        }
+
+        .go-to-menu-button:active {
+            transform: translateY(0);
         }
 
         .success-header {
@@ -138,7 +163,7 @@
         .step:nth-child(2) { animation-delay: 1.2s; }
         .step:nth-child(3) { animation-delay: 1.4s; }
         .step:nth-child(4) { animation-delay: 1.6s; }
-
+         
         .step-circle {
             width: 70px;
             height: 70px;
@@ -240,7 +265,7 @@
 
         @keyframes progressFill {
             from { width: 0%; }
-            to { width: 75%; }
+            to { width: 25%; }
         }
 
         @keyframes spin {
@@ -302,6 +327,7 @@
 </head>
 <body>
     <div class="tracking-container">
+    <button class="go-to-menu-button" onclick="callMenuApi()">Go to Menu</button>
         <div class="success-header">
             <div class="checkmark-circle">
                 <div class="checkmark">✓</div>
@@ -420,5 +446,19 @@
       
         updateDeliveryTime(); // Call function to set initial time
       </script>
+      <script>
+        function callMenuApi() {
+            fetch('/menu')
+                .then(response => {
+                    if (response.ok) {
+                        // Redirect to the /menu page if necessary
+                        window.location.href = '/menu'; 
+                    } else {
+                        console.error('Failed to call the /menu API');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+        </script>
 </body>
 </html>

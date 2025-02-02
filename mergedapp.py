@@ -135,7 +135,7 @@ def init_db():
 
             # New Order Table
             cursor.execute("""
-                CREATE TABLE IF NOT EXISTS Orders1(
+                CREATE TABLE IF NOT EXISTS Orders_Analysis(
                     orderId INTEGER PRIMARY KEY AUTOINCREMENT,
                     customerName TEXT NOT NULL,
                     productName TEXT NOT NULL,
@@ -164,7 +164,7 @@ def init_db():
                     deliveryAgentId INTEGER NOT NULL,
                     status TEXT CHECK(status IN ('New', 'In Progress', 'Completed')) NOT NULL,
                     action TEXT NOT NULL,
-                    FOREIGN KEY (orderId) REFERENCES Orders1 (orderId) ON DELETE CASCADE,
+                    FOREIGN KEY (orderId) REFERENCES Orders_Analysis (orderId) ON DELETE CASCADE,
                     FOREIGN KEY (customerName) REFERENCES users (username),
                     FOREIGN KEY (deliveryAgentId) REFERENCES Delivery_Agent (id)
                 )
@@ -347,7 +347,7 @@ def confirm_order():
         for item in cart:
             item_id = item['id']
             cursor.execute('SELECT name FROM menu_items WHERE id = ?', (item_id,))
-           # cursor.execute('INSERT INTO Orders1(item_name)VALUES(?)',(item))
+           # cursor.execute('INSERT INTO Orders_Analysis(item_name)VALUES(?)',(item))
             row = cursor.fetchone()
             if row:
                 item_names.append(f"{row[0]} (x{item['quantity']})")
@@ -360,12 +360,12 @@ def confirm_order():
                        (items_str, location, total_price))
         conn.commit()
         order_id = cursor.lastrowid
-         #Insert into Orders1 database
+        #Insert into Orders_Analysis database
         conn = sqlite3.connect(DATABASE)
         cursor = conn.cursor()
         customerName=session['username']
         items = items_str.split(",")  # Split items
-        cursor.execute("SELECT id from orders where items=?",(items_str,))
+        cursor.execute("SELECT id FROM orders WHERE items = ? ORDER BY id DESC",(items_str,))
         r=cursor.fetchone()
         id=r[0]
         for item in items:
@@ -375,15 +375,15 @@ def confirm_order():
                 quantity = int(quantity)
                 print(customerName,id, item_name)
                 for _ in range(quantity):
-                    cursor.execute("INSERT INTO Orders1 (customerName,orderId, productName,orderDate) VALUES (?, ?, ?,CURRENT_DATE)", 
+                    cursor.execute("INSERT INTO Orders_Analysis (customerName,orderId, productName,orderDate) VALUES (?, ?, ?,CURRENT_DATE)", 
                             (customerName,id, item_name))
             else:
                 item_name, quantity = item.strip(), 1  # Default quantity = 1
-                cursor.execute("INSERT INTO Orders1 (customerName,orderId, productName,orderDate) VALUES (?, ?, ?,CURRENT_DATE)", 
+                cursor.execute("INSERT INTO Orders_Analysis (customerName,orderId, productName,orderDate) VALUES (?, ?, ?,CURRENT_DATE)", 
                             (customerName,id, item_name))
 
        # Commit and close
-       #conn.commit()
+        #conn.commit()
         conn.commit()
         conn.close()
 
@@ -393,10 +393,9 @@ def confirm_order():
     except Exception as e:
         app.logger.error(f"Error saving order: {e}")
         return jsonify({'error': 'Failed to save order'}), 500
-
-       
         
- 
+        
+
 @app.route('/confirmOrder', methods=['GET'])
 def confirm_order_page():
     """Render the order confirmation page."""
@@ -537,7 +536,7 @@ def assign_order():
     conn = get_db_connection()
     cursor = conn.cursor()
     print(orderId)
-    cursor.execute('''SELECT customerName FROM Orders1 WHERE orderId=?''', (orderId,))
+    cursor.execute('''SELECT customerName FROM Orders_Analysis WHERE orderId=?''', (orderId,))
     customerName = cursor.fetchone()
     print(orderId)
     print(customerName)
@@ -1395,7 +1394,7 @@ def get_assigned_orders(delivery_agent_id):
         cursor = conn.cursor()
         cursor.execute("""
             SELECT o.orderId, o.customerName, u.contact AS phone, u.location AS address, a.status, a.action, a.deliveryAgentId
-            FROM Orders1 o
+            FROM Orders_Analysis o
             JOIN assignedOrders a ON o.orderId = a.orderId
             JOIN users u ON a.customerName = u.username
             WHERE a.deliveryAgentId = ?;
@@ -1435,7 +1434,7 @@ def get_orders_by_status(agent_id,status=None):
         if status:
             cursor.execute("""
             SELECT o.orderId, o.customerName, u.contact AS phone, u.location AS address, a.status, a.action, a.deliveryAgentId
-            FROM Orders1 o
+            FROM Orders_Analysis o
             JOIN assignedOrders a ON o.orderId = a.orderId
             JOIN users u ON a.customerName = u.username
             WHERE a.deliveryAgentId = ? and a.status = ?;
@@ -1443,7 +1442,7 @@ def get_orders_by_status(agent_id,status=None):
         else:
             cursor.execute("""
             SELECT o.orderId, o.customerName, u.contact AS phone, u.location AS address, a.status, a.action, a.deliveryAgentId
-            FROM Orders1 o
+            FROM Orders_Analysis o
             JOIN assignedOrders a ON o.orderId = a.orderId
             JOIN users u ON a.customerName = u.username
             WHERE a.deliveryAgentId = ?;
@@ -1598,7 +1597,7 @@ def items_analysis_admin():
             SELECT mi.id, mi.name, mi.price, mi.category, mi.subcategory, mi.discount,
             COUNT(o.orderId) AS times_ordered
             FROM menu_items mi
-            LEFT JOIN Orders1 o ON mi.name = o.productName  -- Match items with orders
+            LEFT JOIN Orders_Analysis o ON mi.name = o.productName  -- Match items with orders
             GROUP BY mi.id
             ORDER BY times_ordered DESC;
             ''')
@@ -1623,7 +1622,7 @@ def customer_rating():
         query = """
             SELECT ao.orderId, o.productName, o.orderDate, mi.price
             FROM assignedOrders ao
-            JOIN Orders1 o ON ao.orderId = o.orderId
+            JOIN Orders_Analysis o ON ao.orderId = o.orderId
             JOIN menu_items mi ON o.productName = mi.name
             WHERE ao.customerName = ? AND ao.status = 'Completed'
         """
@@ -1721,7 +1720,7 @@ def customer_demographics():
                     COUNT(DISTINCT id) AS customer_count,
                     COUNT(o.orderId) AS order_frequency
                 FROM users u
-                LEFT JOIN Orders1 o ON u.username = o.customerName
+                LEFT JOIN Orders_Analysis o ON u.username = o.customerName
                 WHERE u.role = 'customer'
                 GROUP BY location
                 ORDER BY order_frequency DESC
@@ -1794,10 +1793,10 @@ def sales_trends():
     query = f"""
         SELECT 
             {group_by} AS period,
-            COUNT(Orders1.orderId) AS totalOrders,
+            COUNT(Orders_Analysis.orderId) AS totalOrders,
             SUM(menu_items.price * (1 - menu_items.discount / 100.0)) AS totalRevenue
-        FROM Orders1
-        INNER JOIN menu_items ON Orders1.productName = menu_items.name
+        FROM Orders_Analysis
+        INNER JOIN menu_items ON Orders_Analysis.productName = menu_items.name
         WHERE orderDate >= ?
         GROUP BY period
         ORDER BY period
