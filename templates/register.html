@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <title>Signup Page</title>
   <style>
     * {
@@ -248,6 +249,7 @@
         
         <label for="password">Password</label>
         <input type="password" id="password" name="password" placeholder="Choose a password" required>
+        <span id="toggle-password" class="toggle-password"><i class="fas fa-eye"></i></span>
         <!-- <p>'Password must be at least 8 characters long and include at least one number and one special character.'</p> -->
         <p id="password-hint">
           Password must be at least 8 characters long and include at least one letter, one digit, and one special character.
@@ -255,7 +257,7 @@
         
         <label for="confirm-password">Confirm Password</label>
         <input type="password" id="confirm-password" name="confirm_password" placeholder="Re-enter your password" required>
-        
+        <span id="toggle-password" class="toggle-password"><i class="fas fa-eye"></i></span>
 
         <label for="location">Location</label>
         <input type="text" id="location" name="location" placeholder="Location" required>
@@ -310,6 +312,20 @@
           confirmPasswordInput.setCustomValidity("");
         }
       });
+    });
+    document.getElementById("toggle-password").addEventListener("click", function() {
+        var passwordField = document.getElementById("password");
+        var icon = document.querySelector("#toggle-password i");
+
+        if (passwordField.type === "password") {
+            passwordField.type = "text";  // Show password
+            icon.classList.remove("fa-eye");  // Remove "eye" icon
+            icon.classList.add("fa-eye-slash");  // Add "eye-slash" icon
+        } else {
+            passwordField.type = "password";  // Hide password
+            icon.classList.remove("fa-eye-slash");  // Remove "eye-slash" icon
+            icon.classList.add("fa-eye");  // Add "eye" icon
+        }
     });
   </script>
   
