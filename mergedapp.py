@@ -1625,10 +1625,9 @@ def customer_rating():
     try:
         # Fetch completed orders for the logged-in customer
         query = """
-            SELECT ao.orderId, o.productName, o.orderDate, mi.price
+            SELECT ao.orderId, o.items, o.timestamp, o.total_price
             FROM assignedOrders ao
-            JOIN Orders_Analysis o ON ao.orderId = o.orderId
-            JOIN menu_items mi ON o.productName = mi.name
+            JOIN orders o ON ao.orderId = o.id
             WHERE ao.customerName = ? AND ao.status = 'Completed'
         """
         cursor = conn.execute(query, (username,))
@@ -1646,9 +1645,9 @@ def customer_rating():
             feedback = feedback_cursor.fetchone()
             order_data.append({
                 'order_id': order['orderId'],
-                'product_name': order['productName'],
-                'order_date': order['orderDate'],
-                'price': order['price'],
+                'product_name': order['items'],
+                'order_date': order['timestamp'],
+                'price': order['total_price'],
                 'feedback': feedback  # Pass feedback to template
             })
     finally:
@@ -1886,6 +1885,28 @@ def delivery_kpi():
         })
 
     return render_template('delivery_kpi.html')
+@app.route('/update_status_of_order', methods=['POST'])
+def update_status_of_order():
+    try:
+        data = request.get_json()
+        order_id = data.get("order_id")
+        
+        if not order_id:
+            return jsonify({"error": "Invalid order ID"}), 400
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Update order status to 'Completed'
+        cursor.execute("UPDATE assignedOrders SET status = 'Completed' WHERE orderId = ?", (order_id,))
+        cursor.execute("UPDATE DeliveryData SET status = 'Delivered' WHERE orderId = ?", (order_id,))
+        conn.commit()
+        conn.close()
+        
+        return jsonify({"success": True, "order_id": order_id, "new_status": "Completed"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 
 if __name__ == '__main__':
     app.run(debug=True) 
