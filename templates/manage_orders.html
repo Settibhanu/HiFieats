@@ -93,6 +93,8 @@
             margin-top: 15px;
             border-radius: 8px;
             background: white;
+            width: 100%;
+            min-width: 800px;
         }
 
         .dropdown-row {
@@ -257,19 +259,28 @@
         <div class="data-container">
             <h3>Select a Delivery Agent</h3>
             <div class="custom-dropdown" id="agentDropdown">
-                <div class="dropdown-row dropdown-header">
-                    <div>Agent Name</div>
-                    <div>Location</div>
-                    <div>Orders Delivered</div>
-                    <div>On Time Deliveries</div>
-                    <div>Customer Ratings</div>
-                    <div>Cancellation Rate</div>
-                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Agent ID</th>
+                            <th>Agent Name</th>
+                            <th>Location</th>
+                            <th>Orders Delivered</th>
+                            <th>On Time Deliveries</th>
+                            <th>Customer Ratings</th>
+                            <th>Cancellation Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody id="agentDropdownBody">
+                        <!-- Agents will be dynamically added here -->
+                    </tbody>
+                </table>
             </div>
         </div>
 
         <div class="selected-agent" id="selectedAgentDetails" style="display: none;">
             <h3>Selected Agent Details</h3>
+            <p><strong>ID:</strong> <span id="agentId"></span></p>
             <p><strong>Name:</strong> <span id="agentName"></span></p>
             <p><strong>Location:</strong> <span id="agentLocation"></span></p>
             <p><strong>Orders Delivered:</strong> <span id="agentOrdersDelivered"></span></p>
@@ -326,17 +337,9 @@
         };
 
         function filterAgentsByLocation(location) {
-            const dropdown = document.getElementById('agentDropdown');
-            dropdown.innerHTML = `
-                <div class="dropdown-row dropdown-header">
-                    <div>Agent Name</div>
-                    <div>Location</div>
-                    <div>Orders Delivered</div>
-                    <div>On Time Deliveries</div>
-                    <div>Customer Ratings</div>
-                    <div>Cancellation Rate</div>
-                </div>
-            `;
+            const dropdownBody = document.getElementById('agentDropdownBody');
+            dropdownBody.innerHTML = '';
+
             let matchingAgents = agents.filter(agent => agent.location === location);
 
             if (matchingAgents.length === 0) {
@@ -344,18 +347,18 @@
             }
 
             matchingAgents.forEach(agent => {
-                const row = document.createElement('div');
-                row.classList.add('dropdown-row');
+                const row = document.createElement('tr');
                 row.innerHTML = `
-                    <div>${agent.username}</div>
-                    <div>${agent.location}</div>
-                    <div>${agent.orders_delivered}</div>
-                    <div>${agent.on_time_deliveries}</div>
-                    <div>${agent.customer_ratings}</div>
-                    <div>${agent.cancellation_rate}</div>
+                    <td>${agent.id}</td>
+                    <td>${agent.username}</td>
+                    <td>${agent.location}</td>
+                    <td>${agent.orders_delivered}</td>
+                    <td>${agent.on_time_deliveries}</td>
+                    <td>${agent.customer_ratings}</td>
+                    <td>${agent.cancellation_rate}</td>
                 `;
                 row.addEventListener('click', () => {
-                    document.getElementById('selectedAgentId').value = agent.id;
+                    document.getElementById('agentId').innerText = agent.id;
                     document.getElementById('agentName').innerText = agent.username;
                     document.getElementById('agentLocation').innerText = agent.location;
                     document.getElementById('agentOrdersDelivered').innerText = agent.orders_delivered;
@@ -363,8 +366,9 @@
                     document.getElementById('agentCustomerRatings').innerText = agent.customer_ratings;
                     document.getElementById('agentCancellationRate').innerText = agent.cancellation_rate;
                     document.getElementById('selectedAgentDetails').style.display = 'block';
+                    document.getElementById('selectedAgentId').value = agent.id;
                 });
-                dropdown.appendChild(row);
+                dropdownBody.appendChild(row);
             });
         }
 
@@ -372,35 +376,30 @@
             const orderId = document.getElementById('orderId').value;
             const agentId = document.getElementById('selectedAgentId').value;
             const scheduledTime = document.getElementById('scheduledDeliveryTime').value;
-
             if (!orderId || !agentId || !scheduledTime) {
                 alert('Please fill in all the fields.');
                 return;
             }
-
             const payload = {
-  orderId: orderId, // ID of the order
-  deliveryAgentId: agentId, // Correct key
-  scheduledDeliveryTime: scheduledTime // Correct key
-};
-
-fetch('/assign_order', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(payload),
-})
-  .then(response => response.json())
-  .then(data => {
-    alert('Order assigned successfully!');
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    alert('Failed to assign order.');
-  });
-
-        }
+                orderId: orderId, // ID of the order
+                deliveryAgentId: agentId, // Correct key
+                scheduledDeliveryTime: scheduledTime // Correct key
+                };
+                fetch('/assign_order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Order assigned successfully!');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to assign order.');
+                });}
     </script>
 </body>
 </html>

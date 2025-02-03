@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assign Orders to Delivery Agents</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -200,9 +201,44 @@
             background: #ffa500;
         }
     </style>
+    <style>
+        /* Style for the list item */
+        li {
+            list-style: none; /* Remove default bullet points */
+            margin: 10px 0; /* Add some margin for spacing */
+        }
+
+        /* Style for the link */
+        li a {
+            text-decoration: none; /* Remove underline */
+            color: #e89911; /* Default text color */
+            font-size: 18px; /* Font size */
+            display: flex; /* Use flexbox to align icon and text */
+            align-items: center; /* Vertically center icon and text */
+            gap: 10px; /* Space between icon and text */
+            padding: 8px 16px; /* Padding for clickable area */
+            border-radius: 4px; /* Rounded corners */
+            transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effects */
+        }
+
+        /* Hover effect for the link */
+        li a:hover {
+            background-color: #ff8800; /* Background color on hover */
+            color: white; /* Text color on hover */
+        }
+
+        /* Style for the Font Awesome icon */
+        li a i {
+            font-size: 20px;
+            color:#ff8800 /* Icon size */
+        }
+    </style>
 </head>
 <body>
     <div class="container">
+        <ul>
+            <li><a href="{{ url_for('admin') }}"><i class="fa-solid fa-house"></i> Home</a></li>
+        </ul>
         <h1>Orders</h1>
         <table id="orders-table">
             <thead>
@@ -339,26 +375,31 @@
         function assignOrder() {
             const orderId = document.getElementById('orderId').value;
             const agentId = document.getElementById('selectedAgentId').value;
-            const scheduledDeliveryTime = document.getElementById('scheduledDeliveryTime').value;
-
-            const data = {
-                orderId,
-                agentId,
-                scheduledDeliveryTime
-            };
-
-            fetch('/assign_order', {
+            const scheduledTime = document.getElementById('scheduledDeliveryTime').value;
+            if (!orderId || !agentId || !scheduledTime) {
+                alert('Please fill in all the fields.');
+                return;
+            }
+            const payload = {
+                orderId: orderId, // ID of the order
+                deliveryAgentId: agentId, // Correct key
+                scheduledDeliveryTime: scheduledTime // Correct key
+                };
+                fetch('/assign_order', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message);
-            });
-        }
+                body: JSON.stringify(payload),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Order assigned successfully!');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to assign order.');
+                });}
     </script>
 </body>
 </html>
