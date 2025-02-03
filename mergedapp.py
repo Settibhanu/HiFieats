@@ -25,7 +25,7 @@ reject = -1
 approve = 1
 pending = 0
 '''
-
+print('Venkateswarlu')
 app = Flask(__name__)
 
 IMAGE_FOLDER = 'static/images'
@@ -452,7 +452,7 @@ def add_item():
 @app.route('/manage_orders')
 def manage_orders():
     # Your logic to handle orders
-    return render_template('manage_orders.html')  # Or appropriate response
+    return render_template('orderassign.html')  # Or appropriate response
 @app.route('/menu_management')
 def menu_management():
     with sqlite3.connect(DATABASE) as conn:
@@ -1887,26 +1887,5 @@ def delivery_kpi():
 
     return render_template('delivery_kpi.html')
 
-@app.route('/update_status_of_order', methods=['POST'])
-def update_status_of_order():
-    try:
-        data = request.get_json()
-        order_id = data.get("order_id")
-        
-        if not order_id:
-            return jsonify({"error": "Invalid order ID"}), 400
-        
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        
-        # Update order status to 'Completed'
-        cursor.execute("UPDATE assignedOrders SET status = 'Completed' WHERE orderId = ?", (order_id,))
-        conn.commit()
-        conn.close()
-        
-        return jsonify({"success": True, "order_id": order_id, "new_status": "Completed"}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    
 if __name__ == '__main__':
     app.run(debug=True) 
