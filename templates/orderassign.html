@@ -339,25 +339,35 @@
         function assignOrder() {
             const orderId = document.getElementById('orderId').value;
             const agentId = document.getElementById('selectedAgentId').value;
-            const scheduledDeliveryTime = document.getElementById('scheduledDeliveryTime').value;
+            const scheduledTime = document.getElementById('scheduledDeliveryTime').value;
 
-            const data = {
-                orderId,
-                agentId,
-                scheduledDeliveryTime
-            };
+            if (!orderId || !agentId || !scheduledTime) {
+                alert('Please fill in all the fields.');
+                return;
+            }
 
-            fetch('/assign_order', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message);
-            });
+            const payload = {
+  orderId: orderId, // ID of the order
+  deliveryAgentId: agentId, // Correct key
+  scheduledDeliveryTime: scheduledTime // Correct key
+};
+
+fetch('/assign_order', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(payload),
+})
+  .then(response => response.json())
+  .then(data => {
+    alert('Order assigned successfully!');
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Failed to assign order.');
+  });
+
         }
     </script>
 </body>
