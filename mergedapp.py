@@ -25,7 +25,7 @@ reject = -1
 approve = 1
 pending = 0
 '''
-
+print('Venkateswarlu')
 app = Flask(__name__)
 
 IMAGE_FOLDER = 'static/images'
