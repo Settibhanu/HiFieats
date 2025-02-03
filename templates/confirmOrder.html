@@ -323,11 +323,40 @@
                 height: 80px;
             }
         }
+        .show-summary-button {
+            position: absolute; /* Position the button absolutely */
+            top: 20px; /* Distance from the top */
+            left: 20px; /* Distance from the left */
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            background: linear-gradient(135deg, #ff8000 0%, #ff9933 100%);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(255, 128, 0, 0.2);  /* Subtle shadow */
+        }
+
+        .show-summary-button:hover {
+            background-color: #ff6600;  /* Darker orange on hover */
+            transform: translateY(-3px); /* Slight lift effect on hover */
+        }
+
+        .show-summary-button:focus {
+            outline: none;  /* Remove default outline on focus */
+        }
+
+        .show-summary-button:active {
+            transform: translateY(1px);  /* Button slightly pushed down when clicked */
+        }
     </style>
 </head>
 <body>
     <div class="tracking-container">
     <button class="go-to-menu-button" onclick="callMenuApi()">Go to Menu</button>
+    <button class="show-summary-button" onclick="showSummaryApi()">Show Summary</button>
         <div class="success-header">
             <div class="checkmark-circle">
                 <div class="checkmark">✓</div>
@@ -458,6 +487,9 @@
                     }
                 })
                 .catch(error => console.error('Error:', error));
+        }
+        function showSummaryApi(){
+            window.location.href = '/order_summary' 
         }
         </script>
 </body>

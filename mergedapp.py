@@ -1906,6 +1906,44 @@ def update_status_of_order():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-
+@app.route('/ordersummary')
+def ordersummary():
+    conn = get_db_connection()
+    name=session["username"]
+    print(name)
+    cursor = conn.cursor()
+    query = '''
+        SELECT DISTINCT r.*,o.customerName,ao.status
+        FROM orders r
+		JOIN Orders_Analysis o on r.id=o.orderID  
+		JOIN assignedOrders ao on ao.status='Completed'
+		WHERE o.customerName= ?
+    '''
+    orders = cursor.execute(query,(name,)).fetchall()
+    
+    conn.close()
+    # Convert rows to list of dictionaries for JSON response
+    orders_list = [dict(order) for order in orders]
+    return render_template('orderhistory.html', orders=orders_list)
+@app.route('/order_summary')
+def order_summary():
+    conn = get_db_connection()
+    name=session["username"]
+    print(name)
+    cursor = conn.cursor()
+    query = '''
+        SELECT DISTINCT r.*,o.customerName,ao.status
+        FROM orders r
+		JOIN Orders_Analysis o on r.id=o.orderID  
+		JOIN assignedOrders ao on ao.status='Completed'
+		WHERE o.customerName= ? ORDER BY r.id DESC
+    '''
+    orders = cursor.execute(query,(name,)).fetchone()
+    print(orders)
+    conn.close()
+    # Convert rows to list of dictionaries for JSON response
+    orders_list = [dict(orders)]
+    print(orders_list)
+    return render_template('ordersummary.html', orders=orders_list)
 if __name__ == '__main__':
     app.run(debug=True) 
