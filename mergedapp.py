@@ -25,7 +25,6 @@ reject = -1
 approve = 1
 pending = 0
 '''
-print('Venkateswarlu')
 app = Flask(__name__)
 
 IMAGE_FOLDER = 'static/images'
@@ -1398,7 +1397,7 @@ def get_assigned_orders(delivery_agent_id):
         conn = sqlite3.connect(DATABASE)
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT o.orderId, o.customerName, u.contact AS phone, u.location AS address, a.status, a.action, a.deliveryAgentId
+            SELECT DISTINCT o.orderId, o.customerName, u.contact AS phone, u.location AS address, a.status, a.action, a.deliveryAgentId
             FROM Orders_Analysis o
             JOIN assignedOrders a ON o.orderId = a.orderId
             JOIN users u ON a.customerName = u.username
