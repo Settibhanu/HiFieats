@@ -1887,5 +1887,26 @@ def delivery_kpi():
 
     return render_template('delivery_kpi.html')
 
+@app.route('/update_status_of_order', methods=['POST'])
+def update_status_of_order():
+    try:
+        data = request.get_json()
+        order_id = data.get("order_id")
+        
+        if not order_id:
+            return jsonify({"error": "Invalid order ID"}), 400
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Update order status to 'Completed'
+        cursor.execute("UPDATE assignedOrders SET status = 'Completed' WHERE orderId = ?", (order_id,))
+        conn.commit()
+        conn.close()
+        
+        return jsonify({"success": True, "order_id": order_id, "new_status": "Completed"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 if __name__ == '__main__':
     app.run(debug=True) 

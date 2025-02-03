@@ -273,7 +273,7 @@
           <label for="status">Filter by Status:</label>
           <select name="status" id="status">
             <option value="" {% if not request.args.get('status') %}selected{% endif %}>All</option>
-            <option value="Pending" {% if request.args.get('status') == 'Pending' %}selected{% endif %}>Pending</option>
+            <option value="New" {% if request.args.get('status') == 'New' %}selected{% endif %}>New</option>
             <option value="In Progress" {% if request.args.get('status') and request.args.get('status').strip() == 'In Progress' %}selected{% endif %}>In Progress</option>
             <option value="Completed" {% if request.args.get('status') == 'Completed' %}selected{% endif %}>Completed</option>
           </select>
@@ -297,7 +297,7 @@
           {% if orders %}
             {% for order in orders %}
               <tr>
-                <td>{{ order[0] }}</td> <!-- Order ID -->
+                <td data-order-id="{{ order[0] }}">{{ order[0] }}</td><!-- Order ID -->
                 <td>{{ order[1] }}</td> <!-- Customer Name -->
                 <td>{{ order[2] }}</td> <!-- Phone -->
                 <td>{{ order[3] }}</td> <!-- Address -->
@@ -324,8 +324,36 @@
 
   <script>
     function updateStatus(orderId) {
-      alert('Updating status for Order ID: ' + orderId);
+        fetch("/update_status_of_order", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ order_id: orderId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update the UI dynamically
+                const row = document.querySelector(`tr[data-order-id="${orderId}"]`);
+                if (row) {
+                    const statusCell = row.querySelector("td:nth-child(5) span");
+                    if (statusCell) {
+                        statusCell.className = "status-badge status-delivered";
+                        statusCell.textContent = "Completed";
+                    }
+                }
+                alert("Order status updated successfully!");
+            } else {
+                alert("Error updating status: " + (data.error || "Unknown error"));
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("Failed to update order status.");
+        });
     }
-  </script>
+    </script>
+    
 </body>
 </html>
