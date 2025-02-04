@@ -137,66 +137,68 @@
         margin: 20px;
       }
     }
+    
     .flash-container {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-        }
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+    }
 
-        .flash-message {
-            background-color: #f44336;
-            /* Red background for error */
-            color: white;
-            padding: 15px;
-            margin: 10px;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 16px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+    .flash-message {
+      background-color: #f44336;
+      /* Red background for error */
+      color: white;
+      padding: 15px;
+      margin: 10px;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 16px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
 
-        .flash-message.success {
-            background-color: #4CAF50;
-            /* Green background for success */
-        }
+    .flash-message.success {
+      background-color: #4CAF50;
+      /* Green background for success */
+    }
 
-        .flash-message.danger {
-            background-color: #f44336;
-            /* Red background for error */
-        }
+    .flash-message.danger {
+      background-color: #f44336;
+      /* Red background for error */
+    }
 
-        .flash-message p {
-            margin: 0;
-        }
+    .flash-message p {
+      margin: 0;
+    }
 
-        /* Hide the flash message after 3 seconds */
-        .flash-message {
-            display: block;
-            animation: fadeInOut 3s forwards;
-        }
-        .password-field {
-            position: relative;
-            width: 100%;  /* Adjust to your needs */
-        }
+    /* Hide the flash message after 3 seconds */
+    .flash-message {
+      display: block;
+      animation: fadeInOut 3s forwards;
+    }
 
-        #password {
-            width: 100%;
-            padding-right: 30px;  /* Space for the icon */
-            padding-left: 10px;
-            height: 40px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
+    .password-field {
+      position: relative;
+      width: 100%;  /* Adjust to your needs */
+    }
 
-        .eye-icon {
-            position: absolute;
-            right: 10px;  /* Position the icon on the right side */
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-        }
+    #password {
+      width: 100%;
+      padding-right: 30px;  /* Space for the icon */
+      padding-left: 10px;
+      height: 40px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    .eye-icon {
+      position: absolute;
+      right: 10px;  /* Position the icon on the right side */
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -221,7 +223,7 @@
         }, 5000); // 5 seconds
     </script>
     {% endif %}
-    {% endwith %}
+  {% endwith %}
   <div class="container">
     <div class="form-container">
       <h1>HIFI FOOD DELIVERY</h1>
@@ -237,8 +239,10 @@
         <input type="text" id="username" name="username" placeholder="Enter your username or email" required>
         
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Enter your password" required>
-        <span id="toggle-password" class="toggle-password"><i class="fas fa-eye"></i></span>
+        <div class="password-field">
+          <input type="password" id="password" name="password" placeholder="Enter your password" required>
+          <span id="toggle-password" class="eye-icon"><i class="fas fa-eye"></i></span>
+        </div>
         <button type="submit">Login</button>
       </form>
       

@@ -17,7 +17,7 @@
       min-height: 100vh;
       margin: 0;
       display: flex;
-      background:  url("{{url_for('static',filename='img.jpg')}}") no-repeat center center fixed;
+      background: url("{{url_for('static',filename='img.jpg')}}") no-repeat center center fixed;
       background-size: cover;
     }
 
@@ -37,6 +37,7 @@
       border-radius: 10px;
       box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Subtle shadow */
       backdrop-filter: blur(10px); /* Frosted glass effect */
+      position: relative;
     }
 
     .form-container h1 {
@@ -64,12 +65,31 @@
       font-size: 14px;
       outline: none;
       transition: border-color 0.3s, box-shadow 0.3s;
+      position: relative;
     }
 
     .form-container select:focus,
     .form-container input:focus {
       border-color: #fc8019; /* Swiggy orange on focus */
       box-shadow: 0 0 4px rgba(252, 128, 25, 0.5); /* Subtle orange glow */
+    }
+
+    .form-container .password-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .form-container .password-container input {
+      padding-right: 30px; /* Extra space for the eye icon */
+    }
+
+    .form-container .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #aaa; /* Light gray color for the icon */
     }
 
     .form-container button {
@@ -99,26 +119,27 @@
       margin-top: 15px;
     }
     .form-container p {
-  font-size: 14px;
-  color: #555; /* Neutral gray for readability */
-  background: rgba(252, 128, 25, 0.1); /* Light orange background */
-  border-left: 4px solid #fc8019; /* Orange left border for emphasis */
-  padding: 10px;
-  border-radius: 4px;
-  margin-top: -10px; /* To slightly overlap the input above */
-  margin-bottom: 15px; /* Proper spacing after the paragraph */
-  font-style: italic; /* Subtle differentiation */
-  line-height: 1.5;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
-}
-#password-hint {
-  font-size: 14px;
-  color: #fc8019; /* Default orange for instructions */
-  margin-top: -10px;
-  margin-bottom: 15px;
-  line-height: 1.5;
-  font-style: italic;
-}
+      font-size: 14px;
+      color: #555; /* Neutral gray for readability */
+      background: rgba(252, 128, 25, 0.1); /* Light orange background */
+      border-left: 4px solid #fc8019; /* Orange left border for emphasis */
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: -10px; /* To slightly overlap the input above */
+      margin-bottom: 15px; /* Proper spacing after the paragraph */
+      font-style: italic; /* Subtle differentiation */
+      line-height: 1.5;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+    }
+
+    #password-hint {
+      font-size: 14px;
+      color: #fc8019; /* Default orange for instructions */
+      margin-top: -10px;
+      margin-bottom: 15px;
+      line-height: 1.5;
+      font-style: italic;
+    }
 
     .form-container .login-link a {
       color: #fc8019; /* Swiggy orange for links */
@@ -141,66 +162,54 @@
         margin: 20px;
       }
     }
+
     .flash-container {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-        }
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+    }
 
-        .flash-message {
-            background-color: #f44336;
-            /* Red background for error */
-            color: white;
-            padding: 15px;
-            margin: 10px;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 16px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+    .flash-message {
+      background-color: #f44336;
+      color: white;
+      padding: 15px;
+      margin: 10px;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 16px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
 
-        .flash-message.success {
-            background-color: #4CAF50;
-            /* Green background for success */
-        }
+    .flash-message.success {
+      background-color: #4CAF50;
+    }
 
-        .flash-message.danger {
-            background-color: #f44336;
-            /* Red background for error */
-        }
+    .flash-message.danger {
+      background-color: #f44336;
+    }
 
-        .flash-message p {
-            margin: 0;
-        }
+    .flash-message p {
+      margin: 0;
+    }
 
-        /* Hide the flash message after 3 seconds */
-        .flash-message {
-            display: block;
-            animation: fadeInOut 3s forwards;
-        }
+    .flash-message {
+      display: block;
+      animation: fadeInOut 3s forwards;
+    }
 
-        #password-hint {
-  font-size: 14px;
-  margin-top: -10px;
-  margin-bottom: 15px;
-  line-height: 1.5;
-  font-style: italic;
-  transition: color 0.3s ease;
-}
+    #password-hint.green {
+      color: green;
+    }
 
-#password-hint.green {
-  color: green;
-}
+    #password-hint.orange {
+      color: orange;
+    }
 
-#password-hint.orange {
-  color: orange;
-}
-
-#password-hint.red {
-  color: red;
-}
+    #password-hint.red {
+      color: red;
+    }
 
   </style>
 </head>
@@ -208,22 +217,21 @@
   {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
   <div class="flash-container">
-      {% for category, message in messages %}
-      <div class="flash-message {{ category }}">
-          <p>{{ message }}</p>
-      </div>
-      {% endfor %}
+    {% for category, message in messages %}
+    <div class="flash-message {{ category }}">
+      <p>{{ message }}</p>
+    </div>
+    {% endfor %}
   </div>
   <script>
-      // Automatically hide flash messages after 5 seconds
-      setTimeout(function() {
-          const flashContainer = document.querySelector('.flash-container');
-          if (flashContainer) {
-              flashContainer.style.transition = "opacity 0.5s ease";
-              flashContainer.style.opacity = "0";
-              setTimeout(() => flashContainer.remove(), 500); // Remove after fade-out
-          }
-      }, 5000); // 5 seconds
+    setTimeout(function() {
+      const flashContainer = document.querySelector('.flash-container');
+      if (flashContainer) {
+        flashContainer.style.transition = "opacity 0.5s ease";
+        flashContainer.style.opacity = "0";
+        setTimeout(() => flashContainer.remove(), 500); 
+      }
+    }, 5000); 
   </script>
   {% endif %}
   {% endwith %}
@@ -243,21 +251,22 @@
           <option value="customer">Customer</option>
           <option value="deliveryagent">Delivery Agent</option>
         </select>
-
-        <!-- <label for="username">Username</label>
-        <input type="text" id="username" name="username" placeholder="Choose a username" required> -->
         
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Choose a password" required>
-        <span id="toggle-password" class="toggle-password"><i class="fas fa-eye"></i></span>
-        <!-- <p>'Password must be at least 8 characters long and include at least one number and one special character.'</p> -->
+        <div class="password-container">
+          <input type="password" id="password" name="password" placeholder="Choose a password" required>
+          <span id="toggle-password" class="toggle-password"><i class="fas fa-eye"></i></span>
+        </div>
+        
         <p id="password-hint">
           Password must be at least 8 characters long and include at least one letter, one digit, and one special character.
         </p>
         
         <label for="confirm-password">Confirm Password</label>
-        <input type="password" id="confirm-password" name="confirm_password" placeholder="Re-enter your password" required>
-        <span id="toggle-password" class="toggle-password"><i class="fas fa-eye"></i></span>
+        <div class="password-container">
+          <input type="password" id="confirm-password" name="confirm_password" placeholder="Re-enter your password" required>
+          <span id="toggle-password" class="toggle-password"><i class="fas fa-eye"></i></span>
+        </div>
 
         <label for="location">Location</label>
         <input type="text" id="location" name="location" placeholder="Location" required>
@@ -271,6 +280,7 @@
       </div>
     </div>
   </div>
+
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const passwordInput = document.getElementById("password");
@@ -280,28 +290,24 @@
       passwordInput.addEventListener("input", () => {
         const password = passwordInput.value;
   
-        // Regex for validation
         const hasLetter = /[a-zA-Z]/.test(password);
         const hasDigit = /\d/.test(password);
         const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
         const isLongEnough = password.length >= 8;
   
-        // Determine password strength
         if (hasLetter && hasDigit && hasSpecial && isLongEnough) {
           passwordHint.style.color = "green";
           passwordHint.textContent = "Password is strong!";
         } else if (
-          (hasLetter && hasDigit && isLongEnough) || // Missing special character
-          (hasLetter && hasSpecial && isLongEnough) || // Missing digit
-          (hasDigit && hasSpecial && isLongEnough) // Missing letter
+          (hasLetter && hasDigit && isLongEnough) ||
+          (hasLetter && hasSpecial && isLongEnough) ||
+          (hasDigit && hasSpecial && isLongEnough)
         ) {
           passwordHint.style.color = "orange";
-          passwordHint.textContent =
-            "Password is moderate.";
+          passwordHint.textContent = "Password is moderate.";
         } else {
           passwordHint.style.color = "red";
-          passwordHint.textContent =
-            "Password is weak.";
+          passwordHint.textContent = "Password is weak.";
         }
       });
   
@@ -313,22 +319,23 @@
         }
       });
     });
-    document.getElementById("toggle-password").addEventListener("click", function() {
-        var passwordField = document.getElementById("password");
-        var icon = document.querySelector("#toggle-password i");
+
+    document.querySelectorAll(".toggle-password").forEach(function (toggle) {
+      toggle.addEventListener("click", function () {
+        var passwordField = toggle.previousElementSibling;
+        var icon = toggle.querySelector("i");
 
         if (passwordField.type === "password") {
-            passwordField.type = "text";  // Show password
-            icon.classList.remove("fa-eye");  // Remove "eye" icon
-            icon.classList.add("fa-eye-slash");  // Add "eye-slash" icon
+          passwordField.type = "text";
+          icon.classList.remove("fa-eye");
+          icon.classList.add("fa-eye-slash");
         } else {
-            passwordField.type = "password";  // Hide password
-            icon.classList.remove("fa-eye-slash");  // Remove "eye-slash" icon
-            icon.classList.add("fa-eye");  // Add "eye" icon
+          passwordField.type = "password";
+          icon.classList.remove("fa-eye-slash");
+          icon.classList.add("fa-eye");
         }
+      });
     });
   </script>
-  
-  
 </body>
 </html>
