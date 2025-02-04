@@ -18,7 +18,7 @@ from functools import wraps
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATABASE = os.path.join(BASE_DIR, 'instance', 'HiFieats.db')
 
-DEFAULT_CITY = "New York City"  # Define the default city to check for "in range"
+DEFAULT_CITY = "Bangalore City"  # Define the default city to check for "in range"
 
 '''
 reject = -1
@@ -332,8 +332,8 @@ def confirm_order():
     location = data['location']
     total_price = data['total']
 
-    # Check if "New York City" exists in the location
-    is_in_range = "New York City" in location
+    # Check if "Bangalore City" exists in the location
+    is_in_range = "Bangalore City" in location
 
     if not is_in_range:
         return jsonify({'error': 'Delivery address is out of range'}), 400
@@ -758,7 +758,7 @@ def login():
                 """, (username,username, password))
                 user = cursor.fetchone()
 
-            elif role == 'admin' and username == 'admin' and password == '123':
+            elif role == 'admin' and username == 'admin@google.com' or '1234567890' and password == '123':
                 flash('Login successful! Welcome back, Admin.', 'success')
                 return redirect(url_for('admin'))  # Redirect to Admin dashboard
             

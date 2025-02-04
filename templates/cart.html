@@ -22,7 +22,7 @@
 
             <section id="location-section">
                 <h2>Delivery Location</h2>
-                <p id="location-text">Default Location: New York City</p>
+                <p id="location-text">Default Location: Bangalore City</p>
                 <button onclick="editLocation()">Edit Location</button>
                 <div id="out-of-range" style="display: none;">Out of range, we will be serving there soon.</div>
             </section>
@@ -68,7 +68,7 @@
     </div>
 
     <script>
-        const DEFAULT_CITY = "New York City";
+        const DEFAULT_CITY = "Bangalore City";
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         const gstRate = 0.18;
         const platformFee = 2.00;
