@@ -748,13 +748,13 @@ def login():
             # Querying based on role
             if role == 'deliveryagent':
                 cursor.execute("""
-                   SELECT * FROM Delivery_Agent  WHERE (username = ? OR email = ?) AND password = ?
+                   SELECT * FROM Delivery_Agent  WHERE (contact = ? OR email = ?) AND password = ?
                 """, (username,username, password))
                 user = cursor.fetchone()
 
             elif role == 'customer':
                 cursor.execute("""
-                    SELECT * FROM users WHERE (username = ? OR email = ?) AND password = ?
+                    SELECT * FROM users WHERE (contact = ? OR email = ?) AND password = ?
                 """, (username,username, password))
                 user = cursor.fetchone()
 
