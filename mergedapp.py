@@ -517,8 +517,8 @@ def get_agents():
     agents = conn.execute('''SELECT a.id, a.username, a.location,
                             SUM(ap.orders_delivered) AS orders_delivered,
                             SUM(ap.on_time_deliveries) AS on_time_deliveries,
-                            AVG(ap.customer_ratings) AS customer_ratings,
-                            AVG(ap.cancellation_rate) AS cancellation_rate
+                            ROUND(AVG(ap.customer_ratings), 1) AS customer_ratings,
+                            ROUND(AVG(ap.cancellation_rate), 3) AS cancellation_rate
                         FROM Delivery_Agent a
                         JOIN DeliveryAgentPerformance ap ON a.id = ap.agent_id
                         WHERE a.approved = 1
