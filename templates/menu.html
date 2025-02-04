@@ -292,21 +292,41 @@
         font-size: 14px;
     }
     .quantity-input {
-        width: 50px;
+        width: 120px;
+        height:50px;
         padding: 5px;
         text-align: center;
         font-size: 16px;
         font-weight: bold;
         border: 2px solid orange;  /* Orange border */
         border-radius: 5px;
-        background-color: white;  /* White background */
-        color: black;  /* Black text */
+        background-color: rgba(252, 149, 6, 0.923);  /* Orange background */
+        color: rgb(247, 241, 241);  /* White text */
         outline: none;
     }
 
     .quantity-input:focus {
         border-color: darkorange; /* Darker shade on focus */
     }
+    .add-to-cart-container {
+            display: flex;
+            align-items: center; /* Vertically center items */
+            gap: 10px; /* Space between button and counter */
+        }
+        .add-to-cart-btn {
+            background-color: #ff8c42;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-to-cart-btn:hover {
+            background-color: #e67e22;
+        }
 </style>
 </head>
 <body>
@@ -452,14 +472,17 @@
                             <div class="info">
                                 <h3>${item.name}</h3>
                                 <p>${item.description}</p>
-                                <p class="price">$${(item.price - item.discount).toFixed(2)}</p>
-                                ${item.discount > 0 ? `<p class="discount">$${item.price.toFixed(2)}</p>` : ''}
-                                <div class="quantity-controls">
-                                       
+                                <p class="price">${(item.price - item.discount).toFixed(2)}</p>
+                                ${item.discount > 0 ? `<p class="discount">${item.price.toFixed(2)}</p>` : ''}
+                               <div class="add-to-cart-container">
+                                   
+                                    <div class="quantity-controls">
                                         <input type="number" class="quantity-input" value="1" min="1">
-                                        
+                                    </div>
+                                     <button class="add-to-cart-btn" onclick="addToCart(${item.id}, '${item.name}', ${item.price}, this)">
+                                        Add to Cart
+                                    </button>
                                 </div>
-                                <button onclick="addToCart(${item.id}, '${item.name}', ${item.price}, this)">Add to Cart</button>
                             </div>
                         `;
     
