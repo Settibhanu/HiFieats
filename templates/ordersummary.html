@@ -96,7 +96,7 @@
                 <h3>Order ID: {{ order.id }}</h3>
                 <p><strong>Customer Name:</strong> {{ order.customerName }}</p>
                 <p><strong>Items Ordered:</strong> {{ order["items"] }}</p>
-                <p><strong>Total Price:</strong> ${{ order.total_price }}</p>
+                <p><strong>Total Price:</strong> ₹{{ order.total_price }}</p>
                 <hr>
             </div>
         {% endfor %}

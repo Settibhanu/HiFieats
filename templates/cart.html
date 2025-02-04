@@ -33,15 +33,15 @@
                 <h2>Charges</h2>
                 <div class="charges-row">
                     <span>GST (18%)</span>
-                    <span>$<span id="gst-charge">0.00</span></span>
+                    <span>₹<span id="gst-charge">0.00</span></span>
                 </div>
                 <div class="charges-row">
                     <span>Platform Fees</span>
-                    <span>$<span id="platform-fee">2.00</span></span>
+                    <span>₹<span id="platform-fee">2.00</span></span>
                 </div>
                 <div class="charges-row">
                     <span>Delivery Fee</span>
-                    <span>$<span id="delivery-fee">5.00</span></span>
+                    <span>₹<span id="delivery-fee">5.00</span></span>
                 </div>
             </section>
 
@@ -49,7 +49,7 @@
                 <h2>Total Amount</h2>
                 <div class="charges-row">
                     <strong>Total</strong>
-                    <strong>$<span id="total-amount">0.00</span></strong>
+                    <strong>₹<span id="total-amount">0.00</span></strong>
                 </div>
             </section>
 
@@ -91,7 +91,7 @@
                 cartItem.innerHTML = `
                     <div class="item-info">
                         <div class="item-name">${item.name}</div>
-                        <div class="item-price">$${item.price.toFixed(2)}</div>
+                        <div class="item-price">₹${item.price.toFixed(2)}</div>
                     </div>
                     <div class="quantity-control-wrapper">
                         <div class="quantity-controls">
@@ -101,7 +101,7 @@
                         </div>
                     </div>
                     <div class="item-actions">
-                        <div class="item-total">$${(item.price * item.quantity).toFixed(2)}</div>
+                        <div class="item-total">₹${(item.price * item.quantity).toFixed(2)}</div>
                         <button class="remove-btn" onclick="removeFromCart(${item.id})">× Remove</button>
                     </div>
                 `;

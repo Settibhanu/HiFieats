@@ -144,15 +144,15 @@
     <div class="food-item-cards">
       <div class="food-item-card">
         <h3>BURGER</h3>
-        <span id="burger-sales">$0</span>
+        <span id="burger-sales">₹0</span>
       </div>
       <div class="food-item-card">
         <h3>PIZZA</h3>
-        <span id="pizza-sales">$0</span>
+        <span id="pizza-sales">₹0</span>
       </div>
       <div class="food-item-card">
         <h3>PASTA</h3>
-        <span id="pasta-sales">$0</span>
+        <span id="pasta-sales">₹0</span>
       </div>
     </div>
 
@@ -196,9 +196,9 @@
 
     // Function to update sales data on cards based on selected time period
     function updateSalesData(timePeriod) {
-      document.getElementById("burger-sales").innerText = `$${salesData["BURGER"][timePeriod]}`;
-      document.getElementById("pizza-sales").innerText = `$${salesData["PIZZA"][timePeriod]}`;
-      document.getElementById("pasta-sales").innerText = `$${salesData["PASTA"][timePeriod]}`;
+      document.getElementById("burger-sales").innerText = `₹${salesData["BURGER"][timePeriod]}`;
+      document.getElementById("pizza-sales").innerText = `₹${salesData["PIZZA"][timePeriod]}`;
+      document.getElementById("pasta-sales").innerText = `₹${salesData["PASTA"][timePeriod]}`;
     }
 
     // Function to display the top-selling item for the selected time period

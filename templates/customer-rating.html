@@ -254,14 +254,14 @@
                 <span>{{ order['product_name'] }}</span>
             </div>
             <div class="order-date">{{ order['order_date'] }}</div>
-            <div class="total-amount">Total Amount: ${{ order['price'] }}</div>
+            <div class="total-amount">Total Amount: ₹{{ order['price'] }}</div>
             <!-- Items Section Heading -->
             <div class="items-heading">Items:</div>
 
              <!-- Items List -->
              <div class="items-list">
                 <ul>
-                    <li>{{ order['product_name'] }} - ${{ order['price'] }}</li>
+                    <li>{{ order['product_name'] }} - ₹{{ order['price'] }}</li>
                 </ul>
             </div>
             {% if order['feedback'] %}

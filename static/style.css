@@ -185,7 +185,7 @@ select:hover, select:focus {
 }
 
 .menu-item .price::before {
-    content: '$';
+    content: '₹';
     font-size: 1.25rem;
     margin-right: 0.25rem;
 }
