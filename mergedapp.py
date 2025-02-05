@@ -1152,6 +1152,7 @@ def accept_order():
                 SET status = 'In Progress' 
                 WHERE orderId = ? AND status = 'New'
             """, (order_id,))
+            cursor.execute("UPDATE DeliveryData SET status = 'In Transit' WHERE orderId = ?", (order_id,))
             conn.commit()
 
         return jsonify({'success': True})
