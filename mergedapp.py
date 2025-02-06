@@ -445,7 +445,7 @@ def add_item():
                            (name, description, price, image_path, category, subcategory, discount))
             conn.commit()
 
-        return redirect(url_for('index'))
+        return redirect(url_for('menu_management'))
     except Exception as e:
         return f"Error adding item: {e}", 500
 @app.route('/manage_orders')
@@ -485,7 +485,7 @@ def edit_item(item_id):
                     cursor.execute('UPDATE menu_items SET name=?, description=?, price=?, category=?, subcategory=?, discount=? WHERE id=?',
                                    (name, description, price, category, subcategory, discount, item_id))
                 conn.commit()
-                return redirect(url_for('index'))
+                return redirect(url_for('menu_management'))
 
             cursor.execute('SELECT * FROM menu_items WHERE id=?', (item_id,))
             item = cursor.fetchone()
@@ -501,7 +501,7 @@ def delete_item(item_id):
             cursor = conn.cursor()
             cursor.execute('DELETE FROM menu_items WHERE id=?', (item_id,))
             conn.commit()
-        return redirect(url_for('index'))
+        return redirect(url_for('menu_management'))
     except Exception as e:
         return f"Error deleting item: {e}", 500
 
@@ -1917,7 +1917,7 @@ def ordersummary():
         SELECT DISTINCT r.*,o.customerName,ao.status
         FROM orders r
 		JOIN Orders_Analysis o on r.id=o.orderID  
-		JOIN assignedOrders ao on ao.status='Completed'
+		JOIN assignedOrders ao on o.orderId=ao.orderId
 		WHERE o.customerName= ?
     '''
     orders = cursor.execute(query,(name,)).fetchall()
